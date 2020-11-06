@@ -8,7 +8,6 @@ import Loading2 from '../../components/Loading2'
 import {preloadingImages} from '../../utils/utils'
 import 'animate.css'
 import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
 
 const url = 'https://github.com/zhangZhiHao1996/image-store/blob/master/react-admin-master/bg1.jpg?raw=true'
 const imgs = [
@@ -60,11 +59,6 @@ class Login extends React.Component {
       //为什么写在then里？id为backgroundBox的DOM元素是在loading为false时才有，而上面的setState可能是异步的，必须等到setState执行完成后才去获取dom
       this.particle = new BGParticle('backgroundBox')
       this.particle.init()
-      notification.open({
-        message:<ul><li>初始账号：admin</li><li>初始密码：admin</li></ul>,
-        duration:0,
-        className:'login-notification'
-      })
     })
   }
   //切换showbox
@@ -103,9 +97,6 @@ class Login extends React.Component {
               <div className='container'>
                 <LoginForm
                   className={showBox === 'login' ? 'box showBox' : 'box hiddenBox'}
-                  switchShowBox={this.switchShowBox}/>
-                <RegisterForm
-                  className={showBox === 'register' ? 'box showBox' : 'box hiddenBox'}
                   switchShowBox={this.switchShowBox}/>
               </div>
             </div>
