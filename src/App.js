@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PrivateRoute from './components/PrivateRoute'
-import {Route, Switch, Redirect, withRouter} from 'react-router-dom'
+import {Route, Switch, withRouter} from 'react-router-dom'
 import Login from './routes/Login/index'
 // import Login from './routes/Login2/index'
 import Index from './routes/Index/index'
