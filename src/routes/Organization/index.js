@@ -70,7 +70,7 @@ class ListDemo extends React.Component {
     )
     return (
       <div>
-        <CustomBreadcrumb arr={['显示', '列表']}/>
+        <CustomBreadcrumb arr={['组织']}/>
         <TypingCard id='howUse' source='最基础的列表展示，可承载文字、列表、图片、段落，常用于后台数据展示页面。'/>
         <Card bordered={false} title='基本用法' style={{marginBottom: 10}} id='basicUsage'>
           <Radio.Group value={size}

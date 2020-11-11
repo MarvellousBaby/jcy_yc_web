@@ -28,6 +28,7 @@ class LoginForm extends React.Component {
             this.props.appStore.toggleLogin(true, {username: values.username})
             const {from} = this.props.location.state || {from: {pathname: '/'}}
             this.props.history.push(from)
+
             // login(values).then(res => {
             //     console.log("res", res);
             //     message.success(111);

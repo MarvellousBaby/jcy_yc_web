@@ -14,6 +14,7 @@ export function logout () {
 
 function _getCookie (name) {
   let start, end
+  console.log("cookie",document.cookie);
   if (document.cookie.length > 0) {
     start = document.cookie.indexOf(name + '=')
     if (start !== -1) {
@@ -25,7 +26,7 @@ function _getCookie (name) {
       return unescape(document.cookie.substring(start, end))
     }
   }
-  return ''
+  return false
 }
 
 function _setCookie (name, value, expire) {
