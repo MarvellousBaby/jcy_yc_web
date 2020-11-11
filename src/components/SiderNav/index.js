@@ -7,6 +7,29 @@ const menus = [
     icon: 'home',
     key: '/home'
   },
+
+
+  {
+    title: '真烟信息',
+    icon: 'laptop',
+    key: '/home/system/cigarette'
+  },
+
+  {
+    title: '用户',
+    icon: 'bars',
+    key: '/home/system/admin'
+  },
+
+  {
+    title: '组织',
+    icon: 'desktop',
+    key: '/home/system/org'
+  },
+
+
+
+
   {
     title: '基本组件',
     icon: 'laptop',

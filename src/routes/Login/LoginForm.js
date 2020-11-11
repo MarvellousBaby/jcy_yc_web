@@ -24,20 +24,20 @@ class LoginForm extends React.Component {
         })
         this.props.form.validateFields((err, values) => {
             console.log("values", values);
-            let params = {
-                userName: "admin",
-                userPwd: "123456"
-            }
-            login(params).then(res => {
-                console.log("res", res);
-                message.success(111);
-                this.props.appStore.toggleLogin(true, {username: values.username})
 
-                const {from} = this.props.location.state || {from: {pathname: '/'}}
-                this.props.history.push(from)
-            }).catch(error => {
-                message.error(222)
-            })
+            this.props.appStore.toggleLogin(true, {username: values.username})
+            const {from} = this.props.location.state || {from: {pathname: '/'}}
+            this.props.history.push(from)
+            // login(values).then(res => {
+            //     console.log("res", res);
+            //     message.success(111);
+            //     this.props.appStore.toggleLogin(true, {username: values.username})
+            //
+            //     const {from} = this.props.location.state || {from: {pathname: '/'}}
+            //     this.props.history.push(from)
+            // }).catch(error => {
+            //     message.error("登录异常")
+            // })
         })
     }
 
