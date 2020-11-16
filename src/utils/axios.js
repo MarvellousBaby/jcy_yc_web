@@ -1,4 +1,6 @@
 import axios from 'axios'
+import {logout} from "./Session";
+import {message} from "antd";
 
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
@@ -11,6 +13,11 @@ axios.interceptors.request.use(function (config) {
 
 // 添加响应拦截器
 axios.interceptors.response.use(function (response) {
+    if(response.code === 5000){
+        logout();
+    }else if (response.code === 100){
+        message.error(response.message);
+    }
     // 对响应数据做点什么
     return response;
 }, function (error) {
