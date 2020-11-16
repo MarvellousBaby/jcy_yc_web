@@ -17,6 +17,8 @@ axios.interceptors.response.use(function (response) {
         logout();
     }else if (response.code === 100){
         message.error(response.message);
+    }else if (response.code === 200){
+        message.success(response.message);
     }
     // 对响应数据做点什么
     return response;
