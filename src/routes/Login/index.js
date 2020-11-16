@@ -9,16 +9,13 @@ import {preloadingImages} from '../../utils/utils'
 import 'animate.css'
 import LoginForm from './LoginForm'
 
-const url = 'https://github.com/zhangZhiHao1996/image-store/blob/master/react-admin-master/bg1.jpg?raw=true'
+const url = 'images/bg1.jpg'
 const imgs = [
-  'https://github.com/zhangZhiHao1996/image-store/blob/master/react-admin-master/slide1.jpg?raw=true',
-  'https://github.com/zhangZhiHao1996/image-store/blob/master/react-admin-master/slide2.jpg?raw=true',
-  'https://github.com/zhangZhiHao1996/image-store/blob/master/react-admin-master/slide3.jpg?raw=true',
-  'https://github.com/zhangZhiHao1996/image-store/blob/master/react-admin-master/slide4.jpg?raw=true'
+  'images/slide1.jpg',
+  'images/slide2.jpg',
+  'images/slide3.jpg',
+  'images/slide4.jpg'
 ]
-
-
-
 
 
 @withRouter @inject('appStore') @observer
@@ -33,8 +30,8 @@ class Login extends React.Component {
   componentDidMount () {
     const isLogin = this.props.appStore
     if(isLogin){
-      this.props.history.go(1)     //当浏览器用后退按钮回到登录页时，判断登录页是否登录，是登录就重定向上个页面
-      // this.props.appStore.toggleLogin(false) //也可以设置退出登录
+      this.props.history.go(1);     //当浏览器用后退按钮回到登录页时，判断登录页是否登录，是登录就重定向上个页面
+      this.props.appStore.toggleLogin(false); //也可以设置退出登录
     }
     this.initPage()
     preloadingImages(imgs)  //预加载下一个页面的图片，预加载了第二次为什么还会去请求图片资源？

@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment';
 import {Button, Card, Col, DatePicker, Divider, Input, Row, Table, Tooltip} from 'antd'
-import {CloseCircleTwoTone, HighlightTwoTone} from '@ant-design/icons';
+import {CloseCircleTwoTone, HighlightTwoTone,PlusOutlined } from '@ant-design/icons';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb/index'
 
 
@@ -64,6 +64,8 @@ class Organization extends React.Component {
         data2: [],
         loading: false,
         loadingMore: false,
+
+        drawerVisible:false,
         query: {
             name: "",
             type: "",
@@ -85,7 +87,7 @@ class Organization extends React.Component {
     submit=(e)=> {
         console.log("value", e);
         console.log("startDate", this.state.query);
-    }
+    };
 
     //清空
     clear=()=>{
@@ -98,7 +100,7 @@ class Organization extends React.Component {
                 endDate: undefined,
             }
         })
-    }
+    };
 
     //时间改变的方法
     onPickerChange = (date, dateString) => {
@@ -112,7 +114,19 @@ class Organization extends React.Component {
                 endDate: dateString[1],
             }
         })
-    }
+    };
+
+    showDrawer = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    onClose = () => {
+        this.setState({
+            visible: false,
+        });
+    };
 
 
     render() {
@@ -173,6 +187,9 @@ class Organization extends React.Component {
                             </Button>
                             <Button style={{marginLeft: 8}} onClick={this.clear}>
                                 重置
+                            </Button>
+                            <Button type="primary" onClick={this.showDrawer}>
+                                <PlusOutlined /> New organization
                             </Button>
                         </div>
                     </Col>
