@@ -12,7 +12,6 @@ import {inject, observer} from "mobx-react";
 class App extends Component {
 
     componentDidMount() {
-        console.log("appStore:",this.props.appStore);
         if (!this.props.appStore.isLogin){
             console.log(!this.props.appStore.isLogin);
             this.props.history.push('/login');

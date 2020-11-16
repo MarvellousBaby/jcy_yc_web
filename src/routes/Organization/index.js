@@ -3,6 +3,7 @@ import moment from 'moment';
 import {Button, Card, Col, DatePicker, Divider, Input, Row, Table, Tooltip} from 'antd'
 import {CloseCircleTwoTone, HighlightTwoTone,PlusOutlined } from '@ant-design/icons';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb/index'
+import OrgDrawerForm from './OrgDrawerForm'
 
 
 const columns = [
@@ -188,9 +189,7 @@ class Organization extends React.Component {
                             <Button style={{marginLeft: 8}} onClick={this.clear}>
                                 重置
                             </Button>
-                            <Button type="primary" onClick={this.showDrawer}>
-                                <PlusOutlined /> New organization
-                            </Button>
+                            <OrgDrawerForm />
                         </div>
                     </Col>
 
@@ -205,6 +204,5 @@ class Organization extends React.Component {
         )
     }
 }
-
 
 export default Organization
