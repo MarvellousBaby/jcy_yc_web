@@ -189,9 +189,12 @@ class Organization extends React.Component {
                             <Button style={{marginLeft: 8}} onClick={this.clear}>
                                 重置
                             </Button>
-                            <OrgDrawerForm />
                         </div>
                     </Col>
+
+                    <Col span={1}></Col>
+
+                    <OrgDrawerForm />
 
                 </Row>
 
