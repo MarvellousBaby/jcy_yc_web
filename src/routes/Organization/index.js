@@ -1,9 +1,12 @@
+import _ from 'lodash';
 import React from 'react'
 import moment from 'moment';
-import {Button, Card, Col, DatePicker, Divider, Input, Row, Table, Tooltip} from 'antd'
-import {CloseCircleTwoTone, HighlightTwoTone,PlusOutlined } from '@ant-design/icons';
+import {Button, Card, Col, DatePicker, Divider, Drawer, Form, Input, Row, Select, Table, Tooltip} from 'antd'
+import {CloseCircleTwoTone, HighlightTwoTone} from '@ant-design/icons';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb/index'
-import OrgDrawerForm from './OrgDrawerForm'
+import OrgDrawerApp from './OrgDrawerForm'
+
+const {Option} = Select;
 
 
 const columns = [
@@ -25,14 +28,15 @@ const columns = [
         render: (text, record) => (
             <span>
         <Tooltip title="Delete">
-          <CloseCircleTwoTone/>
+          <button onClick={event => {
+              console.log("e1",text)
+          }}><CloseCircleTwoTone/></button>
         </Tooltip>
       <Divider type="vertical"/>
         <Tooltip title="Update">
-            <HighlightTwoTone/>
+            <button onClick={this.clickUpdate(text)}><HighlightTwoTone/></button>
         </Tooltip>
     </span>
-
         ),
     }];
 
@@ -55,7 +59,8 @@ const data = [
     }]
 
 const {RangePicker} = DatePicker;
-const dateFormat = 'YYYY-MM-DD HH:mm:ss'||undefined;
+const dateFormat = 'YYYY-MM-DD HH:mm:ss' || undefined;
+
 class Organization extends React.Component {
     state = {
         current: 3,
@@ -66,37 +71,38 @@ class Organization extends React.Component {
         loading: false,
         loadingMore: false,
 
-        drawerVisible:false,
         query: {
             name: "",
             type: "",
             startDate: undefined,
             endDate: undefined
+        },
+        orgUpdate:{
+            updateDrawerVisible: false,
+            id:"",
+            name: "",
+            type: "",
         }
     };
 
 
     componentDidMount() {
-        this.setState({
-            loading: true,
-        });
-        this.setState({
-            loading: false
-        })
+        this.init();
     };
 
-    submit=(e)=> {
+    //查询列表
+    submit = (e) => {
         console.log("value", e);
         console.log("startDate", this.state.query);
     };
 
     //清空
-    clear=()=>{
+    clear = () => {
         this.setState({
-            query:{
+            query: {
                 ...this.state.query,
-                name:"",
-                type:"",
+                name: "",
+                type: "",
                 startDate: undefined,
                 endDate: undefined,
             }
@@ -109,7 +115,7 @@ class Organization extends React.Component {
         //这两个参数值antd自带的参数
         console.log("dateString", dateString[0], "dateString", dateString[1]);
         this.setState({
-            query:{
+            query: {
                 ...this.state.query,
                 startDate: dateString[0],
                 endDate: dateString[1],
@@ -117,21 +123,64 @@ class Organization extends React.Component {
         })
     };
 
-    showDrawer = () => {
+    // 获取数据: 列表数据
+    getData = async ({params} = {}) => {
+        const {data2} = {...this.props.params, ...params};
         this.setState({
-            visible: true,
-        });
+            data2: data2
+        })
     };
 
     onClose = () => {
         this.setState({
-            visible: false,
+            ...this.state.orgUpdate,
+            orgUpdate: {
+                updateDrawerVisible: false,
+                name:"",
+                type:""
+            }
         });
     };
 
+    clickUpdate = (text) =>{
+        this.setState({
+            ...this.state.orgUpdate,
+            orgUpdate:{
+                updateDrawerVisible: true,
+                id:text.key,
+                name:text.name,
+                type:text.type
+            }
+        })
+        console.log("e2",text);
+    }
+
+    update = e =>{
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                console.log('Received values of form: ', values);
+            }
+        });
+        this.setState({
+            ...this.state.orgUpdate,
+            orgUpdate: {
+                updateDrawerVisible: false,
+                name:"",
+                type:""
+            }
+        });
+    };
+
+    //页面数据初始化
+    init = () => {
+
+    };
 
     render() {
         const {query} = this.state;
+        const { getFieldDecorator } = this.props.form;
+
         return (
             <div>
                 <CustomBreadcrumb arr={['组织']}/>
@@ -143,7 +192,7 @@ class Organization extends React.Component {
                                 this.setState({
                                     query: {
                                         ...query,
-                                        name:event.target.value
+                                        name: event.target.value
                                     }
                                 })
                             })}
@@ -160,7 +209,7 @@ class Organization extends React.Component {
                                 this.setState({
                                     query: {
                                         ...query,
-                                        type:event.target.value
+                                        type: event.target.value
                                     }
                                 })
                             })}
@@ -174,7 +223,7 @@ class Organization extends React.Component {
                     <Col span={4} className="gutter-row">
                         <RangePicker
                             onChange={this.onPickerChange}
-                            value={query.startDate===undefined||query.endDate===undefined||query.startDate===""||query.endDate===""?null:[moment(query.startDate, dateFormat), moment(query.endDate, dateFormat)]}
+                            value={query.startDate === undefined || query.endDate === undefined || query.startDate === "" || query.endDate === "" ? null : [moment(query.startDate, dateFormat), moment(query.endDate, dateFormat)]}
                             format={dateFormat}
                             showTime/>
                     </Col>
@@ -194,18 +243,74 @@ class Organization extends React.Component {
 
                     <Col span={1}></Col>
 
-                    <OrgDrawerForm />
+                    <OrgDrawerApp getData={this.getData}/>
 
                 </Row>
 
                 <Divider/>
 
                 <Card bordered={false} title='组织列表' style={{marginBottom: 10}}>
-                    <Table dataSource={data} columns={columns} />
+                    <Table dataSource={data} columns={columns}/>
                 </Card>
+
+                <Drawer
+                    title="update organization"
+                    width={400}
+                    onClose={this.onClose}
+                    visible={this.state.orgUpdate.updateDrawerVisible}
+                    bodyStyle={{ paddingBottom: 80 }}
+                >
+                    <Form layout="vertical" hideRequiredMark>
+                        <Row gutter={24}>
+                            <Col span={24}>
+                                <Form.Item label="Name">
+                                    {getFieldDecorator('name', {
+                                        initialValue: _.get(this.state, 'orgUpdate.name', void 0),
+                                        rules: [{ required: true, message: 'Please enter org name' }],
+                                    })(<Input placeholder="Please enter org name" />)}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={24}>
+                            <Col span={24}>
+                                <Form.Item label="Type">
+                                    {getFieldDecorator('type', {
+                                        initialValue: _.get(this.state, 'orgUpdate.type', void 0),
+                                        rules: [{ required: true, message: 'Please select an type' }],
+                                    })( <Select allowClear placeholder="Please select an type">
+                                        <Option value="0">局</Option>
+                                        <Option value="1">所</Option>
+                                    </Select>)}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
+                    <div
+                        style={{
+                            position: 'absolute',
+                            right: 0,
+                            bottom: 0,
+                            width: '100%',
+                            borderTop: '1px solid #e9e9e9',
+                            padding: '10px 16px',
+                            background: '#fff',
+                            textAlign: 'right',
+                        }}
+                    >
+                        <Button onClick={this.onClose} style={{ marginRight: 8 }}>
+                            Cancel
+                        </Button>
+                        <Button onClick={this.update} type="primary">
+                            Update
+                        </Button>
+                    </div>
+                </Drawer>
+
             </div>
         )
     }
 }
 
-export default Organization
+const OrganizationApp = Form.create()(Organization);
+
+export  default OrganizationApp;

@@ -1,12 +1,19 @@
+import _ from 'lodash';
 import {Button, Col, Drawer, Form, Input, Row, Select} from 'antd';
 import React, {Component} from 'react'
 import {PlusOutlined} from '@ant-design/icons';
 
 const {Option} = Select;
 
-export default class OrgDrawerForm extends Component {
+ class OrgDrawerForm extends Component {
 
-    state = {visible: false};
+    state = {
+        visible: false,
+        orgAdd: {
+            name:"",
+            type:undefined
+        }
+    };
 
     showDrawer = () => {
         this.setState({
@@ -17,10 +24,32 @@ export default class OrgDrawerForm extends Component {
     onClose = () => {
         this.setState({
             visible: false,
+            orgAdd: {
+                name:"",
+                type:undefined
+            }
+        });
+    };
+
+    add = e =>{
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                console.log('Received values of form: ', values);
+            }
+        });
+        this.setState({
+            visible: false,
+            orgAdd: {
+                name:"",
+                type:undefined
+            }
         });
     };
 
     render() {
+        const { getFieldDecorator } = this.props.form;
+
         return (
             <div>
                 <Button type="primary" onClick={this.showDrawer}>
@@ -32,30 +61,29 @@ export default class OrgDrawerForm extends Component {
                     onClose={this.onClose}
                     visible={this.state.visible}
                     bodyStyle={{ paddingBottom: 80 }}
+                    destroyOnClose
                 >
                     <Form layout="vertical" hideRequiredMark>
                         <Row gutter={24}>
                             <Col span={24}>
-                                <Form.Item
-                                    name="name"
-                                    label="Name"
-                                    rules={[{required: true, message: 'Please enter org name'}]}
-                                >
-                                    <Input placeholder="Please enter org name"/>
+                                <Form.Item label="Name">
+                                    {getFieldDecorator('name', {
+                                        initialValue: _.get(this.state, 'orgAdd.name', void 0),
+                                        rules: [{ required: true, message: 'Please enter org name' }],
+                                    })(<Input placeholder="Please enter org name" />)}
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Row gutter={24}>
                             <Col span={24}>
-                                <Form.Item
-                                    name="type"
-                                    label="Type"
-                                    rules={[{required: true, message: 'Please select an type'}]}
-                                >
-                                    <Select placeholder="Please select an type">
+                                <Form.Item label="Type">
+                                    {getFieldDecorator('type', {
+                                        initialValue: _.get(this.state, 'orgAdd.type', void 0),
+                                        rules: [{ required: true, message: 'Please select an type' }],
+                                    })( <Select allowClear placeholder="Please select an type">
                                         <Option value="0">局</Option>
                                         <Option value="1">所</Option>
-                                    </Select>
+                                    </Select>)}
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -75,7 +103,7 @@ export default class OrgDrawerForm extends Component {
                         <Button onClick={this.onClose} style={{ marginRight: 8 }}>
                             Cancel
                         </Button>
-                        <Button onClick={this.onClose} type="primary">
+                        <Button onClick={this.add} type="primary">
                             Submit
                         </Button>
                     </div>
@@ -83,11 +111,9 @@ export default class OrgDrawerForm extends Component {
             </div>
         );
     }
-
-    get footer() {
-        return (
-            1
-        );
-    }
 }
+
+const OrgDrawerApp = Form.create()(OrgDrawerForm);
+
+ export  default OrgDrawerApp;
 
