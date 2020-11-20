@@ -1,66 +1,40 @@
 import _ from 'lodash';
 import React from 'react'
 import moment from 'moment';
-import {Button, Card, Col, DatePicker, Divider, Drawer, Form, Input, Row, Select, Table, Tooltip} from 'antd'
+import {Button, Card, Col, DatePicker, Divider, Drawer, Form, Input, Row, Select, Table, Tooltip,Switch} from 'antd'
 import {CloseCircleTwoTone, HighlightTwoTone} from '@ant-design/icons';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb/index'
 import OrgDrawerApp from './OrgDrawerForm'
+import {withRouter} from "react-router-dom";
+import {inject, observer} from "mobx-react";
+import { isAuthenticated } from '../../utils/Session'
 
 const {Option} = Select;
 
 
-const columns = [
-    {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-    }, {
-        title: 'Type',
-        dataIndex: 'type',
-        key: 'type',
-    }, {
-        title: 'Status',
-        dataIndex: 'enable',
-        key: 'enable',
-    }, {
-        title: 'Action',
-        key: 'action',
-        render: (text, record) => (
-            <span>
-        <Tooltip title="Delete">
-          <button onClick={event => {
-              console.log("e1",text)
-          }}><CloseCircleTwoTone/></button>
-        </Tooltip>
-      <Divider type="vertical"/>
-        <Tooltip title="Update">
-            <button onClick={this.clickUpdate(text)}><HighlightTwoTone/></button>
-        </Tooltip>
-    </span>
-        ),
-    }];
-
 const data = [
     {
         key: '1',
-        name: 'John Brown',
-        type: 32,
-        enable: 'New York No. 1 Lake Park',
+        name: '城区局',
+        type: 0,
+        enable: 1,
     }, {
         key: '2',
-        name: 'Jim Green',
-        type: 42,
-        enable: 'London No. 1 Lake Park',
+        name: '车站路所',
+        type: 1,
+        enable: 1,
     }, {
         key: '3',
-        name: 'Joe Black',
-        type: 32,
-        enable: 'Sidney No. 1 Lake Park',
+        name: '象山所',
+        type: 1,
+        enable: 0,
     }]
 
 const {RangePicker} = DatePicker;
 const dateFormat = 'YYYY-MM-DD HH:mm:ss' || undefined;
+const scroll = {x:600, y: 700 };
 
+@withRouter @inject('appStore') @observer @Form.create()
 class Organization extends React.Component {
     state = {
         current: 3,
@@ -71,22 +45,36 @@ class Organization extends React.Component {
         loading: false,
         loadingMore: false,
 
+        table:{
+            scroll:scroll,
+            showColumn:true
+        },
         query: {
             name: "",
             type: "",
             startDate: undefined,
             endDate: undefined
         },
-        orgUpdate:{
+        orgUpdate: {
             updateDrawerVisible: false,
-            id:"",
+            id: "",
             name: "",
             type: "",
         }
+
     };
 
 
     componentDidMount() {
+        console.log("user",isAuthenticated());
+        if (isAuthenticated() !== "admin"){
+            this.setState({
+                table:{
+                    ...this.state.table,
+                    showColumn:false
+                }
+            })
+        }
         this.init();
     };
 
@@ -133,29 +121,40 @@ class Organization extends React.Component {
 
     onClose = () => {
         this.setState({
-            ...this.state.orgUpdate,
             orgUpdate: {
+                ...this.state.orgUpdate,
                 updateDrawerVisible: false,
-                name:"",
-                type:""
+                name: "",
+                type: ""
             }
         });
     };
 
-    clickUpdate = (text) =>{
+    clickUpdate = (text) => {
         this.setState({
-            ...this.state.orgUpdate,
-            orgUpdate:{
+            orgUpdate: {
+                ...this.state.orgUpdate,
                 updateDrawerVisible: true,
-                id:text.key,
-                name:text.name,
-                type:text.type
+                id: text.key,
+                name: text.name,
+                type: text.type
             }
         })
-        console.log("e2",text);
+        console.log("e2", this.state.orgUpdate.type);
     }
 
-    update = e =>{
+    clickDelete = (id) =>{
+        this.setState({
+            orgUpdate: {
+                ...this.state.orgUpdate,
+                id: id
+            }
+        })
+        console.log("e3", this.state.orgUpdate.id);
+
+    }
+
+    update = e => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -166,8 +165,8 @@ class Organization extends React.Component {
             ...this.state.orgUpdate,
             orgUpdate: {
                 updateDrawerVisible: false,
-                name:"",
-                type:""
+                name: "",
+                type: ""
             }
         });
     };
@@ -179,7 +178,7 @@ class Organization extends React.Component {
 
     render() {
         const {query} = this.state;
-        const { getFieldDecorator } = this.props.form;
+        const {getFieldDecorator} = this.props.form;
 
         return (
             <div>
@@ -203,21 +202,23 @@ class Organization extends React.Component {
                     <Col span={1}></Col>
 
                     <Col className="gutter-row" span={1}>类型：</Col>
-                    <Col className="gutter-row" span={3}>
-                        <Input
-                            onChange={(event => {
-                                this.setState({
-                                    query: {
-                                        ...query,
-                                        type: event.target.value
-                                    }
-                                })
-                            })}
-                            value={query.type}
-                            placeholder="请输入类型"/>
+                    <Col className="gutter-row" span={4}>
+                        <Select allowClear
+                                placeholder="请输入类型"
+                                onChange={(event => {
+                                    console.log(event);
+                                    this.setState({
+                                        query: {
+                                            ...this.state.query,
+                                            type: event.target.value
+                                        }
+                                    })
+                                })}
+                                style={{width: 200}}>
+                            <Option value="0">局</Option>
+                            <Option value="1">所</Option>
+                        </Select>
                     </Col>
-
-                    <Col span={1}></Col>
 
                     <Col className="gutter-row" span={1}>查询日期：</Col>
                     <Col span={4} className="gutter-row">
@@ -250,7 +251,10 @@ class Organization extends React.Component {
                 <Divider/>
 
                 <Card bordered={false} title='组织列表' style={{marginBottom: 10}}>
-                    <Table dataSource={data} columns={columns}/>
+                    <Table
+                        {...this.state.table}
+                        dataSource={data}
+                        columns={this.column}/>
                 </Card>
 
                 <Drawer
@@ -258,7 +262,7 @@ class Organization extends React.Component {
                     width={400}
                     onClose={this.onClose}
                     visible={this.state.orgUpdate.updateDrawerVisible}
-                    bodyStyle={{ paddingBottom: 80 }}
+                    bodyStyle={{paddingBottom: 80}}
                 >
                     <Form layout="vertical" hideRequiredMark>
                         <Row gutter={24}>
@@ -266,8 +270,8 @@ class Organization extends React.Component {
                                 <Form.Item label="Name">
                                     {getFieldDecorator('name', {
                                         initialValue: _.get(this.state, 'orgUpdate.name', void 0),
-                                        rules: [{ required: true, message: 'Please enter org name' }],
-                                    })(<Input placeholder="Please enter org name" />)}
+                                        rules: [{required: true, message: 'Please enter org name'}],
+                                    })(<Input placeholder="Please enter org name"/>)}
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -275,11 +279,12 @@ class Organization extends React.Component {
                             <Col span={24}>
                                 <Form.Item label="Type">
                                     {getFieldDecorator('type', {
-                                        initialValue: _.get(this.state, 'orgUpdate.type', void 0),
-                                        rules: [{ required: true, message: 'Please select an type' }],
-                                    })( <Select allowClear placeholder="Please select an type">
-                                        <Option value="0">局</Option>
-                                        <Option value="1">所</Option>
+                                        initialValue: this.state.orgUpdate.type,
+                                        rules: [{required: true, message: 'Please select an type'}],
+                                    })(<Select allowClear
+                                               placeholder="Please select an type">
+                                        <Option value={0}>局</Option>
+                                        <Option value={1}>所</Option>
                                     </Select>)}
                                 </Form.Item>
                             </Col>
@@ -297,7 +302,7 @@ class Organization extends React.Component {
                             textAlign: 'right',
                         }}
                     >
-                        <Button onClick={this.onClose} style={{ marginRight: 8 }}>
+                        <Button onClick={this.onClose} style={{marginRight: 8}}>
                             Cancel
                         </Button>
                         <Button onClick={this.update} type="primary">
@@ -309,8 +314,52 @@ class Organization extends React.Component {
             </div>
         )
     }
+
+    get column() {
+        return [
+            {
+                title: 'Name',
+                dataIndex: 'name',
+                key: 'name',
+            }, {
+                title: 'Type',
+                dataIndex: 'type',
+                key: 'type',
+                render: (text,record) => {
+                    return <span>{text === 0 ? '局':'所'}</span>
+                }
+            }, {
+                title: 'Status',
+                dataIndex: 'enable',
+                key: 'enable',
+                render: (text,record) => {
+                    return <Switch
+                        checked={text === 0}
+                        checkedChildren={'正常'}
+                        unCheckedChildren={'删除'}
+                    />
+                }
+            }, {
+                title: 'Action',
+                key: 'action',
+                render: (text, record) => (
+                    this.state.table.showColumn?
+                    <span >
+                        <Tooltip title="Update">
+                            <Button type="link"  onClick={event => this.clickUpdate(record)}><HighlightTwoTone/></Button>
+                        </Tooltip>
+                        <Divider type="vertical"/>
+                        <Tooltip title="Delete">
+                            <Button type="link"  onClick={event => this.clickDelete(record.key)}><CloseCircleTwoTone/></Button>
+                        </Tooltip>
+                    </span>:""
+                )
+            }];
+    }
+
+
 }
 
 const OrganizationApp = Form.create()(Organization);
 
-export  default OrganizationApp;
+export default OrganizationApp;
